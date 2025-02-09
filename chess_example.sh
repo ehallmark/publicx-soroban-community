@@ -44,8 +44,27 @@ function check_winner {
     --network $network \
     --send yes \
     -- \
-    winner)
-  echo "Winner: ${winner}"
+    winner | tr -d '"')
+  board=$(stellar contract invoke \
+    --id "${contract_id}" \
+    --source carol \
+    --network $network \
+    --send yes \
+    -- \
+    display)
+  echo "Board:"
+  echo $board | jq .[:3] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N' ' '
+  echo
+  echo $board | jq .[3:6] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N' ' '
+  echo
+  echo $board | jq .[6:9] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N' ' '
+  echo 
+  if [ -z "${winner}" ]; then
+    echo "No winner yet"
+  else
+    if [ "${winner}" == "${alice}" ]; then echo "Alice wins!" ; fi
+    if [ "${winner}" == "${bob}" ]; then echo "Bob wins!" ; fi
+  fi
 }
 
 # Start the game

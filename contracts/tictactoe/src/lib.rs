@@ -1,12 +1,12 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, log, symbol_short, Env, Address, Symbol, String};
+use soroban_sdk::{contract, contractimpl, log, symbol_short, Env, Address, vec, Vec, Symbol, String};
 
 #[contract]
 pub struct Contract;
 
 const X: Symbol = symbol_short!("X");
 const O: Symbol = symbol_short!("O");
-const NULL: Symbol = symbol_short!("NULL");
+const NULL: Symbol = symbol_short!("N");
 
 const PLAYER: Symbol = symbol_short!("PLAYER");
 const OPPONENT: Symbol = symbol_short!("OPPONENT");
@@ -149,6 +149,21 @@ impl Contract {
         let empty: String = String::from_str(&env, "");
         log!(&env, "", env.storage().instance().get(&WINNER).unwrap_or(empty.clone()));
         env.storage().instance().get(&WINNER).unwrap_or(empty)
+    }
+
+    pub fn display(env: Env) -> Vec<Symbol> {
+        vec![
+            &env,
+            env.storage().instance().get(&0u32).unwrap_or(NULL),
+            env.storage().instance().get(&1u32).unwrap_or(NULL),
+            env.storage().instance().get(&2u32).unwrap_or(NULL),
+            env.storage().instance().get(&3u32).unwrap_or(NULL),
+            env.storage().instance().get(&4u32).unwrap_or(NULL),
+            env.storage().instance().get(&5u32).unwrap_or(NULL),
+            env.storage().instance().get(&6u32).unwrap_or(NULL),
+            env.storage().instance().get(&7u32).unwrap_or(NULL),
+            env.storage().instance().get(&8u32).unwrap_or(NULL)
+        ]
     }
 }
 
