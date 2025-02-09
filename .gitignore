@@ -1,0 +1,9 @@
+# Rust's output directory
+target
+
+# Test output directory
+test_snapshots
+
+# Local settings
+.soroban
+.stellar
