@@ -13,6 +13,7 @@ const OPPONENT: Symbol = symbol_short!("OPPONENT");
 const PLAYING: Symbol = symbol_short!("PLAYING");
 const NEXT: Symbol = symbol_short!("NEXT");
 const WINNER: Symbol = symbol_short!("WINNER");
+const PLAY_COUNT: Symbol = symbol_short!("COUNT");
 
 #[contractimpl]
 impl Contract {
@@ -28,6 +29,7 @@ impl Contract {
             env.storage().instance().set(&OPPONENT, &opponent_addr.to_string());
             env.storage().instance().set(&NEXT, &player_addr.to_string());
             env.storage().instance().set(&WINNER, &empty);
+            env.storage().instance().set(&PLAY_COUNT, &0u32);
             for i in 0..9u32 {
                 env.storage().instance().set(&i, &NULL);
             }
@@ -50,7 +52,7 @@ impl Contract {
 
         let playing: u32 = env.storage().instance().get(&PLAYING).unwrap_or(0);
 
-        if playing == 0 {
+        if playing == 0u32 {
             log!(&env, "not playing!");
             return 1;
         }
@@ -89,6 +91,8 @@ impl Contract {
 
         log!(&env, "player move: {}", &player_move);
 
+        let count: u32 = env.storage().instance().get(&PLAY_COUNT).unwrap_or(0u32) + 1;
+
         if player_move < 9 {
             // valid move
             if env.storage().instance().get(&player_move).unwrap_or(NULL) != NULL {
@@ -101,6 +105,7 @@ impl Contract {
 
         env.storage().instance().set(&player_move, &value);
         env.storage().instance().set(&NEXT, &next);
+        env.storage().instance().set(&PLAY_COUNT, &count);
         env.storage().instance().extend_ttl(100, 100);
 
         // check rows and cols
@@ -124,6 +129,11 @@ impl Contract {
             if env.storage().instance().get(&2u32).unwrap_or(NULL) == value && env.storage().instance().get(&4u32).unwrap_or(NULL) == value && env.storage().instance().get(&6u32).unwrap_or(NULL) == value {
                 win = true;
             }
+        }
+
+        if count == 9 {
+            log!(&env, "board is full");
+            env.storage().instance().set(&PLAYING, &0u32);        
         }
 
         if win {
@@ -164,6 +174,11 @@ impl Contract {
             env.storage().instance().get(&7u32).unwrap_or(NULL),
             env.storage().instance().get(&8u32).unwrap_or(NULL)
         ]
+    }
+
+    pub fn is_playing(env: Env) -> u32 {
+        let playing: u32 = env.storage().instance().get(&PLAYING).unwrap_or(0);
+        return playing;
     }
 }
 
