@@ -53,12 +53,16 @@ function check_winner {
     -- \
     display)
   echo "Board:"
-  echo $board | jq .[:3] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N' ' '
+  echo " ----------- "
+  echo $board | jq .[:3] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N"' ' ' | tr ',[]' '|'
   echo
-  echo $board | jq .[3:6] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N' ' '
+  echo " ----------- "
+  echo $board | jq .[3:6] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N"' ' ' | tr ',[]' '|'
   echo
-  echo $board | jq .[6:9] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N' ' '
-  echo 
+  echo " ----------- "
+  echo $board | jq .[6:9] |  awk '{printf "%s", $0}' |  tr -d ' ' | tr 'N"' ' ' | tr ',[]' '|'
+  echo
+  echo " ----------- "
   if [ -z "${winner}" ]; then
     echo "No winner yet"
   else
