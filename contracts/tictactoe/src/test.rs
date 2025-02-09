@@ -5,7 +5,7 @@ use super::*;
 use soroban_sdk::{
     symbol_short,
     testutils::{Address as _, AuthorizedFunction, AuthorizedInvocation},
-    Address, Env, IntoVal, String
+    Address, Env, IntoVal
 };
 
 #[test]
@@ -110,5 +110,11 @@ fn test() {
     assert_eq!(
         client.play(&bob, &5),
         1
+    );
+
+    // bob start's a new game
+    assert_eq!(
+        client.start(&bob, &alice),
+        0
     );
 }

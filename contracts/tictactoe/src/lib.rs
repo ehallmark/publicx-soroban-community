@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, log, contracterror, bytes, symbol_short, Env, Address, Symbol, Bytes, String};
+use soroban_sdk::{contract, contractimpl, log, symbol_short, Env, Address, Symbol, String};
 
 #[contract]
 pub struct Contract;
@@ -48,7 +48,7 @@ impl Contract {
         
         log!(&env, "pre assert...");
 
-        let mut playing: u32 = env.storage().instance().get(&PLAYING).unwrap_or(0);
+        let playing: u32 = env.storage().instance().get(&PLAYING).unwrap_or(0);
 
         if playing == 0 {
             log!(&env, "not playing!");
@@ -60,17 +60,17 @@ impl Contract {
         let empty: String = String::from_str(&env, "");
 
         // make sure player is next
-        if env.storage().instance().get(&NEXT).unwrap_or(empty.clone()) != addr.to_string() {
+        let mut next: String = env.storage().instance().get(&NEXT).unwrap_or(empty.clone());
+        if next != addr.to_string() {
             // bad
             log!(&env, "user is not next to play");
             return 1;
         }
 
         // check if player is playing
-        let mut value: Symbol = NULL;
-        let mut player = env.storage().instance().get(&PLAYER).unwrap_or(empty.clone());
-        let mut opponent = env.storage().instance().get(&OPPONENT).unwrap_or(empty.clone());
-        let mut next = String::from_str(&env, "");
+        let value: Symbol;
+        let player: String = env.storage().instance().get(&PLAYER).unwrap_or(empty.clone());
+        let opponent: String = env.storage().instance().get(&OPPONENT).unwrap_or(empty.clone());
 
 
         if player == addr.to_string() {
@@ -89,7 +89,7 @@ impl Contract {
 
         log!(&env, "player move: {}", &player_move);
 
-        if player_move >= 0 && player_move < 9 {
+        if player_move < 9 {
             // valid move
             if env.storage().instance().get(&player_move).unwrap_or(NULL) != NULL {
                 log!(&env, "someone already played this tile");
@@ -102,10 +102,6 @@ impl Contract {
         env.storage().instance().set(&player_move, &value);
         env.storage().instance().set(&NEXT, &next);
         env.storage().instance().extend_ttl(100, 100);
-
-        // check for winner
-        let r = player_move / 3;
-        let c = player_move % 3;
 
         // check rows and cols
         let mut win: bool = false;
