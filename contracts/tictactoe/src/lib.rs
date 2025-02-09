@@ -105,12 +105,12 @@ impl Contract {
 
         // check rows and cols
         let mut win: bool = false;
-        for i in 0..3u32 {
-            if env.storage().instance().get(&(i*3)).unwrap_or(NULL) == value && env.storage().instance().get(&(i*3 + 1)).unwrap_or(NULL) == value && env.storage().instance().get(&(i*3 + 2)).unwrap_or(NULL) == value {
+        for i in 0u32..3u32 {
+            if env.storage().instance().get(&(i*3u32)).unwrap_or(NULL) == value && env.storage().instance().get(&(i*3 + 1)).unwrap_or(NULL) == value && env.storage().instance().get(&(i*3 + 2)).unwrap_or(NULL) == value {
                 win = true;
                 break;
             }
-            if env.storage().instance().get(&(i)).unwrap_or(NULL) == value && env.storage().instance().get(&(1*3u32 + i)).unwrap_or(NULL) == value && env.storage().instance().get(&(2*3 + i)).unwrap_or(NULL) == value {
+            if env.storage().instance().get(&(i)).unwrap_or(NULL) == value && env.storage().instance().get(&(1*3u32 + i)).unwrap_or(NULL) == value && env.storage().instance().get(&(2*3u32 + i)).unwrap_or(NULL) == value {
                 win = true;
                 break;
             }
@@ -121,7 +121,7 @@ impl Contract {
             if env.storage().instance().get(&0u32).unwrap_or(NULL) == value && env.storage().instance().get(&4u32).unwrap_or(NULL) == value && env.storage().instance().get(&8u32).unwrap_or(NULL) == value {
                 win = true;
             }
-            if env.storage().instance().get(&0u32).unwrap_or(NULL) == value && env.storage().instance().get(&4u32).unwrap_or(NULL) == value && env.storage().instance().get(&8u32).unwrap_or(NULL) == value {
+            if env.storage().instance().get(&2u32).unwrap_or(NULL) == value && env.storage().instance().get(&4u32).unwrap_or(NULL) == value && env.storage().instance().get(&6u32).unwrap_or(NULL) == value {
                 win = true;
             }
         }

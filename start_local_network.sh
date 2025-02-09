@@ -1,0 +1,1 @@
+stellar container start local
