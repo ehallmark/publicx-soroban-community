@@ -1,4 +1,3 @@
-#set -x
 contract_name="tictactoe"
 bot_contract_name="ttt_bot"
 network="testnet"
@@ -7,7 +6,7 @@ network="testnet"
 #bot_wasm_hash=""
 #bot_contract_id=""
 
-Echo "Building latest..."
+echo "Building latest..."
 
 # Build
 cargo test
