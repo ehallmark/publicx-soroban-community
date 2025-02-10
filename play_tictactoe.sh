@@ -1,6 +1,6 @@
 contract_name="tictactoe"
 bot_contract_name="ttt_bot"
-network="testnet"
+network="local" #"testnet"
 #wasm_hash="c5b643adcd569e36c6e24df790747bc3bf98cc0a391804bc00072d4779f542f5"
 #contract_id="CD4VZ4L3IHY54TABOIBQOTW36DENW3ZTL5GOZ6EG2FSMTDYLEY5SGV42"
 #bot_wasm_hash=""
@@ -89,6 +89,19 @@ function check_winner {
   fi
 }
 
+function parse_move {
+    res="$1"
+    if [ "$res" == "top left" ] ; then echo "0" ; fi
+    if [ "$res" == "top center" ] ; then echo "1" ; fi
+    if [ "$res" == "top right" ] ; then echo "2" ; fi
+    if [ "$res" == "middle left" ] ; then echo "3" ; fi
+    if [ "$res" == "middle center" ] ; then echo "4" ; fi
+    if [ "$res" == "middle right" ] ; then echo "5" ; fi
+    if [ "$res" == "bottom left" ] ; then echo "6" ; fi
+    if [ "$res" == "bottom center" ] ; then echo "7" ; fi
+    if [ "$res" == "bottom right" ] ; then echo "8" ; fi
+}
+
 # Get keys for Alice and Bob
 alice=$(stellar keys address alice)
 
@@ -113,7 +126,7 @@ do
             --network $network \
             --send yes \
             -- \
-            play --addr $alice --player_move $player_move
+            play --addr $alice --player_move $(parse_move "$player_move")
         check_winner
     
 

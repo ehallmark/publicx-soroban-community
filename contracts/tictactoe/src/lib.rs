@@ -161,15 +161,15 @@ impl Contract {
         env.storage().instance().get(&WINNER).unwrap_or(empty)
     }
 
-    pub fn is_empty(env: Env, i: u32) -> u32 {
+    pub fn is_empty(env: Env, i: u32) -> bool {
         let value: Option<Symbol> = env.storage().instance().get(&i);
         match value {
-            None => 0u32,
+            None => false,
             Some(x) => {
                 if &x == &NULL { 
-                    1u32
+                    true
                 } else { 
-                    0u32
+                    false
                 }
             }
         }
@@ -190,9 +190,9 @@ impl Contract {
         ]
     }
 
-    pub fn is_playing(env: Env) -> u32 {
+    pub fn is_playing(env: Env) -> bool {
         let playing: u32 = env.storage().instance().get(&PLAYING).unwrap_or(0);
-        return playing;
+        return playing > 0;
     }
 }
 

@@ -17,7 +17,7 @@ impl BotContract {
 
         log!(&env, "{}", env.current_contract_address());
         log!(&env, "is playing: ", client.is_playing());
-        if client.is_playing() < 1 {
+        if ! client.is_playing() {
             log!(&env, "Game has not started yet.");
             return 1u32;
         }
@@ -31,7 +31,7 @@ impl BotContract {
         let mut moves: Vec<u32> = vec![&env];
 
         for i in 0..9u32 {
-            if client.is_empty(&i) > 0 {
+            if client.is_empty(&i) {
                 moves.push_back(i);
             }
         }
