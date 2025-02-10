@@ -1,6 +1,6 @@
 contract_name="tictactoe"
 bot_contract_name="ttt_bot"
-network="local" # "testnet"
+network="testnet"
 #wasm_hash="c5b643adcd569e36c6e24df790747bc3bf98cc0a391804bc00072d4779f542f5"
 #contract_id="CD4VZ4L3IHY54TABOIBQOTW36DENW3ZTL5GOZ6EG2FSMTDYLEY5SGV42"
 #bot_wasm_hash=""
