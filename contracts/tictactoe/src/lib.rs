@@ -161,6 +161,20 @@ impl Contract {
         env.storage().instance().get(&WINNER).unwrap_or(empty)
     }
 
+    pub fn is_empty(env: Env, i: u32) -> u32 {
+        let value: Option<Symbol> = env.storage().instance().get(&i);
+        match value {
+            None => 0u32,
+            Some(x) => {
+                if &x == &NULL { 
+                    1u32
+                } else { 
+                    0u32
+                }
+            }
+        }
+    }
+
     pub fn display(env: Env) -> Vec<Symbol> {
         vec![
             &env,

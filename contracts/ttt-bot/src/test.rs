@@ -3,7 +3,7 @@
 use crate::{tictactoe, BotContract, BotContractClient};
 
 use super::*;
-use soroban_sdk::{vec, Env, String, testutils::Address as _};
+use soroban_sdk::{Env, testutils::Address as _};
 
 #[test]
 fn test() {

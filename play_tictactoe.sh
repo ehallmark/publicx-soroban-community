@@ -1,3 +1,4 @@
+#set -x
 contract_name="tictactoe"
 bot_contract_name="ttt_bot"
 network="local" # "testnet"
@@ -6,10 +7,13 @@ network="local" # "testnet"
 #bot_wasm_hash=""
 #bot_contract_id=""
 
+Echo "Building latest..."
+
 # Build
 cargo test
 stellar contract build
-ls target/wasm32-unknown-unknown/release/*.wasm
+
+echo "Deploying contracts..."
 
 # Install tic tac toe contract
 if [ -z "$wasm_hash" ]; then
@@ -49,12 +53,6 @@ if [ -z "$bot_contract_id" ]; then
     echo "bot contract id: $bot_contract_id"
 fi
 
-# Get keys for Alice and Bob
-alice=$(stellar keys address alice)
-bob=$(stellar keys address bob)
-
-echo "Alice: $alice"
-echo "Bob: $bob"
 
 # Utility for checking the winner
 function check_winner {
@@ -86,65 +84,50 @@ function check_winner {
   if [ -z "${winner}" ]; then
     echo "No winner yet"
   else
-    if [ "${winner}" == "${alice}" ]; then echo "Alice wins!" ; fi
-    if [ "${winner}" == "${bob}" ]; then echo "Bob wins!" ; fi
+    if [ "${winner}" == "${alice}" ]; then echo "You win!" ; fi
+    if [ "${winner}" == "${bot_contract_id}" ]; then echo "Bob wins!" ; fi
+    exit 0
   fi
 }
 
-# Human vs human
-echo "2 player game"
+# Get keys for Alice and Bob
+alice=$(stellar keys address alice)
 
-# Start the game
+
+# Bot Game
+echo "Game against bot contract"
 stellar contract invoke \
   --id "${contract_id}" \
   --source alice \
   --network $network \
   -- \
-  start --player_addr $alice --opponent_addr $bob
+  start --player_addr $alice --opponent_addr $bot_contract_id
 check_winner
 
-# Alice goes center center
-stellar contract invoke \
-  --id "${contract_id}" \
-  --source alice \
-  --network $network \
-  -- \
-  play --addr $alice --player_move 4
-check_winner
+while true
+do
 
-# Bob goes top left
-stellar contract invoke \
-  --id "${contract_id}" \
-  --source bob \
-  --network $network \
-  -- \
-  play --addr $bob --player_move 0
-check_winner
+    read -p "Your move: " player_move && \
+        stellar contract invoke \
+            --id "${contract_id}" \
+            --source alice \
+            --network $network \
+            --send yes \
+            -- \
+            play --addr $alice --player_move $player_move
+        check_winner
+    
 
+    # Let computer go
+    echo "Computer's move..."
+    stellar contract invoke \
+    --id "${bot_contract_id}" \
+    --source alice \
+    --network $network \
+    --send yes \
+    -- \
+    go --contract "${contract_id}"
+    check_winner
 
-# Alice goes bottom left
-stellar contract invoke \
-  --id "${contract_id}" \
-  --source alice \
-  --network $network \
-  -- \
-  play --addr $alice --player_move 6
-check_winner
-
-# Bob goes top center
-stellar contract invoke \
-  --id "${contract_id}" \
-  --source bob \
-  --network $network \
-  -- \
-  play --addr $bob --player_move "1"
-check_winner
-
-# Alice goes top right (winning the game!)
-stellar contract invoke \
-  --id "${contract_id}" \
-  --source alice \
-  --network $network \
-  -- \
-  play --addr $alice --player_move 2
-check_winner
+    sleep 1
+done
