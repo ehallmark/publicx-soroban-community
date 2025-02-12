@@ -10,10 +10,9 @@ use soroban_sdk::{
 use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
 
-fn create_token_contract<'a>(e: &Env, admin: &Address) -> (Address, TokenClient<'a>, TokenAdminClient<'a>) {
+fn create_token_contract<'a>(e: &Env, admin: &Address) -> (TokenClient<'a>, TokenAdminClient<'a>) {
     let sac = e.register_stellar_asset_contract_v2(admin.clone());
     (   
-        sac.address().clone(),
         token::Client::new(e, &sac.address()),
         token::StellarAssetClient::new(e, &sac.address()),
     )
@@ -27,7 +26,6 @@ struct EscrowTest<'a> {
     env: Env,
     depositor: Address,
     recipients: Vec<Address>,
-    token: Address,
     token_client: TokenClient<'a>,
     contract_client: EscrowContractClient<'a>,
 }
@@ -52,7 +50,7 @@ impl<'a> EscrowTest<'a> {
         ];
 
         
-        let (token, token_client, token_admin_client) = create_token_contract(&env, &token_admin);
+        let (token_client, token_admin_client) = create_token_contract(&env, &token_admin);
         token_admin_client.mint(&depositor, &1000);
 
 
@@ -61,7 +59,6 @@ impl<'a> EscrowTest<'a> {
             env,
             depositor,
             recipients,
-            token,
             token_client,
             contract_client,
         }
@@ -72,12 +69,12 @@ impl<'a> EscrowTest<'a> {
 #[test]
 fn test() {
     let test = EscrowTest::setup();
-    let EscrowTest { env, depositor, recipients, token, token_client, contract_client } = test;
+    let EscrowTest { env, depositor, recipients, token_client, contract_client } = test;
     assert_eq!(
         contract_client.deposit(
             &depositor,
             &recipients.get(0).unwrap(),
-            &token,
+            &token_client.address.clone(),
             &100i128,
             &TimeBound {
                 kind: TimeBoundKind::After,
@@ -86,7 +83,7 @@ fn test() {
         ), 
         (ReceiptConfig {
             amount: 100i128,
-            token: token.clone(),
+            token: token_client.address.clone(),
             depositor: depositor.clone(),
             time_bound: TimeBound {
                 kind: TimeBoundKind::After,
@@ -101,7 +98,7 @@ fn test() {
             &None
         ), (ReceiptConfig {
                 amount: 100i128,
-                token: token.clone(),
+                token: token_client.address.clone(),
                 depositor: depositor.clone(),
                 time_bound: TimeBound {
                     kind: TimeBoundKind::After,
